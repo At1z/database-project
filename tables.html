@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabele - Dokumentacja Bazy Danych Mediów</title>
+    <link rel="stylesheet" href="css/colors.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="doc-container">
+      <aside class="sidebar">
+        <h2 class="sidebar-title">Nav</h2>
+        <nav>
+          <ul>
+            <li><a href="index.html">Przegląd</a></li>
+
+            <li><a href="tables.html">Tabele</a></li>
+            <li><a href="views.html">Widoki</a></li>
+            <li><a href="functions.html">Funkcje</a></li>
+            <li><a href="triggers.html">Triggery</a></li>
+          </ul>
+        </nav>
+      </aside>
+      <main class="content">
+        <header class="page-header">
+          <h1>Tabele</h1>
+          <p>Opis poszczególnych tabel użytych w bazie danych.</p>
+        </header>
+
+        <!-- Tabela Creators -->
+        <section id="creators" class="doc-section">
+          <h2>Creators</h2>
+          <div class="doc-block">
+            <h3>Struktura Tabeli</h3>
+            <pre class="code-block"><code>
+CREATE TYPE creator_type AS ENUM ('Artist', 'Podcaster');
+
+CREATE TABLE Creators (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  bio TEXT,
+  photo_url VARCHAR(255),
+  monthly_listeners INT,
+  type_creator creator_type NOT NULL
+);
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Tabela <strong>Creators</strong> przechowuje dane o twórcach – zarówno artystach, jak i podcasterach.
+              Zawiera informacje takie jak nazwa, biografia, zdjęcie oraz liczba miesięcznych słuchaczy.
+            </p>
+            <h4>Przykład Użycia</h4>
+            <pre class="code-block"><code>
+INSERT INTO Creators 
+(name, bio, photo_url, monthly_listeners, type_creator)
+VALUES 
+('John Doe', 'Muzyk i artysta', 'https://example.com/johndoe.jpg', 1000000, 'Artist');
+            </code></pre>
+          </div>
+        </section>
+
+        <!-- Tabela Podcasts -->
+        <section id="podcasts" class="doc-section">
+          <h2>Podcasts</h2>
+          <div class="doc-block">
+            <h3>Struktura Tabeli</h3>
+            <pre class="code-block"><code>
+CREATE TABLE Podcasts (
+  podcast_id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  avg_rating FLOAT CHECK (avg_rating >= 1 AND avg_rating <= 5),
+  creator_id INT REFERENCES Creators(id) ON DELETE CASCADE,
+  cover_url VARCHAR(255)
+);
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Tabela <strong>Podcasts</strong> przechowuje informacje o podcastach. Zawiera tytuł, średnią ocenę,
+              odniesienie do twórcy oraz adres URL okładki.
+            </p>
+            <h4>Przykład Użycia</h4>
+            <pre class="code-block"><code>
+INSERT INTO Podcasts 
+(title, avg_rating, creator_id, cover_url)
+VALUES 
+('Tech Talk', 4.7, 1, 'https://example.com/techpodcast.jpg');
+            </code></pre>
+          </div>
+        </section>
+
+        <!-- Tabela Albums -->
+        <section id="albums" class="doc-section">
+          <h2>Albums</h2>
+          <div class="doc-block">
+            <h3>Struktura Tabeli</h3>
+            <pre class="code-block"><code>
+CREATE TYPE album_type AS ENUM ('Album', 'EP');
+
+CREATE TABLE Albums (
+  album_id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  release_date TIMESTAMP DEFAULT NOW(),
+  type_album album_type NOT NULL,
+  creator_id INT REFERENCES Creators(id) ON DELETE CASCADE,
+  cover_url VARCHAR(255),
+  avg_rating FLOAT CHECK (avg_rating >= 1 AND avg_rating <= 5)
+);
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Tabela <strong>Albums</strong> przechowuje dane o albumach muzycznych. Znajdziesz tu informacje o tytule,
+              dacie wydania, rodzaju albumu (Album lub EP), odniesieniu do twórcy oraz średniej ocenie.
+            </p>
+            <h4>Przykład Użycia</h4>
+            <pre class="code-block"><code>
+INSERT INTO Albums 
+(title, type_album, creator_id, cover_url, avg_rating)
+VALUES 
+('New Horizons', 'Album', 1, 'https://example.com/albumcover.jpg', 4.5);
+            </code></pre>
+          </div>
+        </section>
+
+        <!-- Tabela Songs -->
+        <section id="songs" class="doc-section">
+          <h2>Songs</h2>
+          <div class="doc-block">
+            <h3>Struktura Tabeli</h3>
+            <pre class="code-block"><code>
+CREATE TABLE Songs (
+  song_id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  album_id INT REFERENCES Albums(album_id) ON DELETE CASCADE,
+  creator_id INT REFERENCES Creators(id) ON DELETE CASCADE,
+  likes INT DEFAULT 0,
+  music_video_url VARCHAR(255),
+  audio_track_url VARCHAR(255),
+  duration INT,
+  avg_rating FLOAT CHECK (avg_rating >= 1 AND avg_rating <= 5)
+);
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Tabela <strong>Songs</strong> przechowuje informacje o utworach muzycznych. Zawiera dane o tytule,
+              odniesienia do albumu oraz twórcy, liczbę polubień, URL-e do wideoklipu i ścieżki audio, czas trwania
+              utworu oraz średnią ocenę.
+            </p>
+            <h4>Przykład Użycia</h4>
+            <pre class="code-block"><code>
+INSERT INTO Songs 
+(title, album_id, creator_id, likes, music_video_url, audio_track_url, duration, avg_rating)
+VALUES 
+('Skyline', 1, 1, 10000, 'https://example.com/musicvideo.mp4', 'https://example.com/audiotrack.mp3', 210, 4.7);
+            </code></pre>
+          </div>
+        </section>
+
+        <!-- Tabela Podcasts_Episodes -->
+        <section id="podcasts-episodes" class="doc-section">
+          <h2>Podcasts_Episodes</h2>
+          <div class="doc-block">
+            <h3>Struktura Tabeli</h3>
+            <pre class="code-block"><code>
+CREATE TABLE Podcasts_episodes (
+  episode_id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  release_date TIMESTAMP DEFAULT NOW(),
+  podcast_id INT REFERENCES Podcasts(podcast_id) ON DELETE CASCADE,
+  cover_url VARCHAR(255)
+);
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Tabela <strong>Podcasts_Episodes</strong> przechowuje informacje o odcinkach podcastów. Zawiera tytuł,
+              datę wydania, odniesienie do podcastu oraz adres URL okładki.
+            </p>
+            <h4>Przykład Użycia</h4>
+            <pre class="code-block"><code>
+INSERT INTO Podcasts_episodes 
+(title, podcast_id, cover_url)
+VALUES 
+('Elon Musk Interview', 1, 'https://example.com/elon.jpg');
+            </code></pre>
+          </div>
+        </section>
+
+        <!-- Tabela Users -->
+        <section id="users" class="doc-section">
+          <h2>Users</h2>
+          <div class="doc-block">
+            <h3>Struktura Tabeli</h3>
+            <pre class="code-block"><code>
+CREATE TYPE subscription_type AS ENUM ('Free', 'Premium', 'HiFi');
+
+CREATE TABLE Users (
+  user_id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  type_subscription subscription_type NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Tabela <strong>Users</strong> przechowuje dane o użytkownikach platformy. Znajdziesz tu imię, adres
+              e-mail, hasło, typ subskrypcji oraz datę utworzenia konta.
+            </p>
+            <h4>Przykład Użycia</h4>
+            <pre class="code-block"><code>
+INSERT INTO Users 
+(name, email, password, type_subscription)
+VALUES 
+('Jan Kowalski', 'jan.kowalski@example.com', 'securepassword123', 'Premium');
+            </code></pre>
+          </div>
+        </section>
+
+        <!-- Tabela Playlists -->
+        <section id="playlists" class="doc-section">
+          <h2>Playlists</h2>
+          <div class="doc-block">
+            <h3>Struktura Tabeli</h3>
+            <pre class="code-block"><code>
+CREATE TABLE Playlists(
+  playlist_id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  user_id INT REFERENCES Users(user_id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT NOW(),
+  likes INT DEFAULT 0,
+  is_private BOOLEAN,
+  duration INT
+);
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Tabela <strong>Playlists</strong> przechowuje dane o playlistach użytkowników. Zawiera nazwę, odniesienie
+              do użytkownika, datę utworzenia, liczbę polubień, informację o prywatności oraz czas trwania.
+            </p>
+            <h4>Przykład Użycia</h4>
+            <pre class="code-block"><code>
+INSERT INTO Playlists 
+(name, user_id, likes, is_private, duration)
+VALUES 
+('Moja Playlist', 1, 100, false, 3600);
+            </code></pre>
+          </div>
+        </section>
+
+        <!-- Tabela Playlists_songs -->
+        <section id="playlists-songs" class="doc-section">
+          <h2>Playlists_songs</h2>
+          <div class="doc-block">
+            <h3>Struktura Tabeli</h3>
+            <pre class="code-block"><code>
+CREATE TABLE Playlists_songs (   
+  playlist_songs_id SERIAL PRIMARY KEY,   
+  song_id INT REFERENCES Songs(song_id) ON DELETE CASCADE, 
+  playlist_id INT REFERENCES Playlists(playlist_id) ON DELETE CASCADE,   
+  added_at TIMESTAMP DEFAULT NOW() 
+);
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Tabela <strong>Playlists_songs</strong> łączy piosenki z playlistami, umożliwiając tworzenie
+              wieloelementowych list odtwarzania oraz przechowywanie informacji o dacie dodania utworu.
+            </p>
+            <h4>Przykład Użycia</h4>
+            <pre class="code-block"><code>
+INSERT INTO Playlists_songs 
+(song_id, playlist_id)
+VALUES 
+(123, 45);
+            </code></pre>
+          </div>
+        </section>
+
+        <!-- Tabele Ocen -->
+        <section id="ratings" class="doc-section">
+          <h2>Tabele Ocen</h2>
+          <!-- Podcasts Ratings -->
+          <div class="doc-block">
+            <h3>Podcasts_ratings</h3>
+            <pre class="code-block"><code>
+CREATE TABLE Podcasts_ratings (
+  podcast_ratings_id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES Users(user_id),
+  podcast_id INT REFERENCES Podcasts(podcast_id),
+  rating FLOAT CHECK (rating >= 1 AND rating <= 5),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+            </code></pre>
+          </div>
+          <!-- Albums Ratings -->
+          <div class="doc-block">
+            <h3>Albums_ratings</h3>
+            <pre class="code-block"><code>
+CREATE TABLE Albums_ratings (  
+  album_ratings_id SERIAL PRIMARY KEY, 
+  user_id INT REFERENCES Users(user_id),
+  album_id INT REFERENCES Albums(album_id), 
+  rating FLOAT CHECK (rating >= 1 AND rating <= 5),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+            </code></pre>
+          </div>
+          <!-- Songs Ratings -->
+          <div class="doc-block">
+            <h3>Songs_ratings</h3>
+            <pre class="code-block"><code>
+CREATE TABLE Songs_ratings (  
+  song_ratings_id SERIAL PRIMARY KEY,  
+  user_id INT REFERENCES Users(user_id),
+  song_id INT REFERENCES Songs(song_id),  
+  rating FLOAT CHECK (rating >= 1 AND rating <= 5),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Tabele ocen przechowują oceny dla podcastów, albumów i utworów. Każda tabela rejestruje identyfikator
+              oceny, identyfikator użytkownika, odniesienie do ocenianego elementu, wartość oceny (od 1 do 5) oraz datę
+              utworzenia oceny.
+            </p>
+          </div>
+        </section>
+
+        <!-- Tabela Audit_Log -->
+        <section id="audit-log" class="doc-section">
+          <h2>Audit_Log</h2>
+          <div class="doc-block">
+            <h3>Struktura Tabeli</h3>
+            <pre class="code-block"><code>
+CREATE TYPE action_type AS ENUM ('INSERT', 'UPDATE', 'DELETE');
+
+CREATE TABLE Audit_Log(
+  audit_log_id SERIAL PRIMARY KEY,
+  table_name VARCHAR(255),
+  record_id INT,
+  type_action action_type NOT NULL,
+  old_value TEXT,
+  new_value TEXT,
+  user_id INT REFERENCES Users(user_id),
+  modified_at TIMESTAMP DEFAULT NOW()
+);
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Tabela <strong>Audit_Log</strong> rejestruje zmiany w bazie danych. Zawiera nazwę tabeli, identyfikator
+              rekordu, typ akcji (INSERT, UPDATE lub DELETE), wartość przed zmianą, wartość po zmianie, identyfikator
+              użytkownika wykonującego operację oraz datę modyfikacji.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

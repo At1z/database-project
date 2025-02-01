@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Widoki - Dokumentacja Bazy Danych Mediów</title>
+    <link rel="stylesheet" href="css/colors.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="doc-container">
+      <aside class="sidebar">
+        <nav>
+          <h2 class="sidebar-title">Nav</h2>
+
+          <ul>
+            <li><a href="index.html">Przegląd</a></li>
+
+            <li><a href="tables.html">Tabele</a></li>
+            <li><a href="views.html">Widoki</a></li>
+            <li><a href="functions.html">Funkcje</a></li>
+            <li><a href="triggers.html">Triggery</a></li>
+          </ul>
+        </nav>
+      </aside>
+      <main class="content">
+        <header class="page-header">
+          <h1>Widoki</h1>
+          <p>Prezentacja widoków zdefiniowanych dla bazy danych.</p>
+        </header>
+
+        <!-- View 1: Top Rated Albums -->
+        <section id="view-top-albums" class="doc-section">
+          <h2>v_top_rated_albums</h2>
+          <div class="doc-block">
+            <h3>Definicja Widoku</h3>
+            <pre class="code-block"><code>
+CREATE OR REPLACE VIEW v_top_rated_albums AS
+SELECT album_id, title, avg_rating
+FROM Albums
+ORDER BY avg_rating DESC
+LIMIT 10;
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Widok <strong>v_top_rated_albums</strong> wyświetla 10 albumów z najwyższą średnią oceną. Umożliwia szybką
+              identyfikację najpopularniejszych albumów w systemie.
+            </p>
+          </div>
+        </section>
+
+        <!-- View 2: Creator Overview -->
+        <section id="view-creator-overview" class="doc-section">
+          <h2>v_creator_overview</h2>
+          <div class="doc-block">
+            <h3>Definicja Widoku</h3>
+            <pre class="code-block"><code>
+CREATE OR REPLACE VIEW v_creator_overview AS
+SELECT c.id, c.name, COUNT(a.album_id) AS total_albums
+FROM Creators c
+LEFT JOIN Albums a ON c.id = a.creator_id
+GROUP BY c.id, c.name;
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Widok <strong>v_creator_overview</strong> łączy dane o twórcach z liczbą wydanych przez nich albumów,
+              dzięki czemu administratorzy mogą łatwo monitorować aktywność artystyczną.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

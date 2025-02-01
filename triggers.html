@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Triggery - Dokumentacja Bazy Danych Mediów</title>
+    <link rel="stylesheet" href="css/colors.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="doc-container">
+      <aside class="sidebar">
+        <h2 class="sidebar-title">Nav</h2>
+        <nav>
+          <ul>
+            <li><a href="index.html">Przegląd</a></li>
+
+            <li><a href="tables.html">Tabele</a></li>
+            <li><a href="views.html">Widoki</a></li>
+            <li><a href="functions.html">Funkcje</a></li>
+            <li><a href="triggers.html">Triggery</a></li>
+          </ul>
+        </nav>
+      </aside>
+      <main class="content">
+        <header class="page-header">
+          <h1>Triggery</h1>
+          <p>Opis triggerów wywołujących funkcję aktualizacji średniej oceny.</p>
+        </header>
+
+        <!-- Trigger for Podcasts_ratings -->
+        <!-- Trigger for Podcasts_ratings -->
+        <section id="trigger-podcasts" class="doc-section">
+          <h2>update_podcast_avg_rating</h2>
+          <div class="doc-block">
+            <h3>Definicja Triggera</h3>
+            <pre class="code-block"><code>
+CREATE TRIGGER update_podcast_avg_rating
+AFTER INSERT ON Podcasts_ratings
+FOR EACH ROW
+EXECUTE PROCEDURE update_avg_rating();
+    </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Trigger wywołuje funkcję <code>update_avg_rating()</code> po dodaniu nowej oceny do podcastu, co
+              automatycznie aktualizuje średnią ocenę w tabeli <code>Podcasts</code>.
+            </p>
+          </div>
+        </section>
+
+        <!-- Trigger for Albums_ratings -->
+        <section id="trigger-albums" class="doc-section">
+          <h2>update_album_avg_rating</h2>
+          <div class="doc-block">
+            <h3>Definicja Triggera</h3>
+            <pre class="code-block"><code>
+CREATE TRIGGER update_album_avg_rating
+AFTER INSERT ON Albums_ratings
+FOR EACH ROW
+EXECUTE PROCEDURE update_avg_rating();
+    </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Trigger uruchamia funkcję <code>update_avg_rating()</code> po dodaniu oceny do albumu, co pozwala na
+              natychmiastową aktualizację średniej oceny w tabeli <code>Albums</code>.
+            </p>
+          </div>
+        </section>
+
+        <!-- Trigger for Songs_ratings -->
+        <section id="trigger-songs" class="doc-section">
+          <h2>update_song_avg_rating</h2>
+          <div class="doc-block">
+            <h3>Definicja Triggera</h3>
+            <pre class="code-block"><code>
+CREATE TRIGGER update_song_avg_rating
+AFTER INSERT ON Songs_ratings
+FOR EACH ROW
+EXECUTE PROCEDURE update_avg_rating();
+    </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Trigger wywołuje funkcję <code>update_avg_rating()</code> po wstawieniu nowej oceny do utworu, zapewniając
+              aktualizację średniej oceny w tabeli <code>Songs</code>.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
