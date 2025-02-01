@@ -1,10 +1,10 @@
 :root {
-  --primary-bg: #121212; /* Dark neutral background */
-  --secondary-bg: #1e1e1e; /* Slightly lighter gray for contrast */
-  --highlight-bg: #292929; /* Highlight sections in dark gray */
-  --accent-color: #d6d6d6; /* Vibrant green for accents */
-  --primary-text: #e0e0e0; /* Light gray for readable text */
-  --secondary-text: #27ae60; /* Muted gray for secondary text */
-  --border-color: #121212; /* Dark gray for borders */
-  --muted-border: #27ae5f7a; /* Muted gray for dividers */
+  --primary-bg: #121212;
+  --secondary-bg: #1e1e1e;
+  --highlight-bg: #292929;
+  --accent-color: #d6d6d6;
+  --primary-text: #e0e0e0;
+  --secondary-text: #27ae60;
+  --border-color: #121212;
+  --muted-border: #27ae5f7a;
 }
