@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Funkcje - Dokumentacja Bazy Danych Mediów</title>
+    <link rel="stylesheet" href="css/colors.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="doc-container">
+      <aside class="sidebar">
+        <h2 class="sidebar-title">Nav</h2>
+        <nav>
+          <ul>
+            <li><a href="index.html">Struktura</a></li>
+
+            <li><a href="tables.html">Tabele</a></li>
+            <li><a href="views.html">Widoki</a></li>
+            <li><a href="functions.html">Funkcje</a></li>
+            <li><a href="triggers.html">Triggery</a></li>
+          </ul>
+        </nav>
+      </aside>
+      <main class="content">
+        <header class="page-header">
+          <h1>Dokumentacja Funkcji</h1>
+          <p>Opis funkcji używanych w bazie danych.</p>
+        </header>
+
+        <!-- Function: update_avg_rating() -->
+        <section id="update-avg-rating-function" class="doc-section">
+          <h2>Funkcja: update_avg_rating()</h2>
+          <div class="doc-block">
+            <h3>Definicja Funkcji</h3>
+            <pre class="code-block"><code>
+CREATE OR REPLACE FUNCTION update_avg_rating() 
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_TABLE_NAME = 'podcasts_ratings' THEN
+    UPDATE Podcasts
+    SET avg_rating = (
+      SELECT AVG(rating)
+      FROM Podcasts_ratings
+      WHERE podcast_id = NEW.podcast_id
+    )
+    WHERE podcast_id = NEW.podcast_id;
+  ELSIF TG_TABLE_NAME = 'albums_ratings' THEN
+    UPDATE Albums
+    SET avg_rating = (
+      SELECT AVG(rating)
+      FROM Albums_ratings
+      WHERE album_id = NEW.album_id
+    )
+    WHERE album_id = NEW.album_id;
+  ELSIF TG_TABLE_NAME = 'songs_ratings' THEN
+    UPDATE Songs
+    SET avg_rating = (
+      SELECT AVG(rating)
+      FROM Songs_ratings
+      WHERE song_id = NEW.song_id
+    )
+    WHERE song_id = NEW.song_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Funkcja <code>update_avg_rating()</code> jest wywoływana przez triggery po wstawieniu nowej oceny. Oblicza
+              ona nową średnią ocenę dla danego rekordu (podcast, album lub utwór) i aktualizuje kolumnę
+              <code>avg_rating</code> w tabeli macierzystej. Dzięki temu dane dotyczące ocen są zawsze aktualne i
+              odzwierciedlają najnowsze informacje.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
