@@ -72,6 +72,28 @@ GROUP BY c.id, c.name;
             </p>
           </div>
         </section>
+
+        <!-- View 3: Top Rated Podcasts -->
+        <section id="view-top-podcasts" class="doc-section">
+          <h2>v_top_rated_podcasts</h2>
+          <div class="doc-block">
+            <h3>Definicja Widoku</h3>
+            <pre class="code-block"><code>
+CREATE OR REPLACE VIEW v_top_rated_podcasts AS
+SELECT podcast_id, title, avg_rating
+FROM Podcasts
+ORDER BY avg_rating DESC
+LIMIT 10;
+            </code></pre>
+          </div>
+          <div class="doc-detail">
+            <h4>Opis</h4>
+            <p>
+              Widok <strong>v_top_rated_podcasts</strong> wyświetla 10 podcastów z najwyższą średnią oceną. Umożliwia
+              szybkie zidentyfikowanie najpopularniejszych podcastów w systemie.
+            </p>
+          </div>
+        </section>
       </main>
     </div>
   </body>
